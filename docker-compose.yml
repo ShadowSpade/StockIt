@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: ./docker/app
+      dockerfile: C:\Users\Sinov8\PhpstormProjects\StockIt\docker\app\DockerFile
+    image: stockit/app:latest
+    networks:
+      - stockit
+    volumes:
+      - .:/var/www/html
+    ports:
+      - 8060:80
+    working_dir: /var/www/html
+  node:
+    build:
+      context: ./docker/node
+      dockerfile: C:\Users\Sinov8\PhpstormProjects\StockIt\docker\node\DockerFile
+    image: stockit/node:latest
+    networks:
+      - stockit
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+  cache:
+    image: redis:alpine
+    networks:
+      - stockit
+    volumes:
+      - cachedata:/data
+  db:
+    image: mysql:5.7.22
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: stockit
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    networks:
+      - stockit
+    volumes:
+      - stockit_dbdata:/var/lib/mysql
+    ports:
+      - "33062:3306"
+networks:
+  stockit:
+    driver: bridge
+volumes:
+  stockit_dbdata:
+    driver: local
+  cachedata:
+    driver: local
